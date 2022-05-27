@@ -35,5 +35,4 @@ public class DatabaseContext {
     public <T> T get(Class<T> type, int id) {
         return em.find(type, id);
     }
-
 }

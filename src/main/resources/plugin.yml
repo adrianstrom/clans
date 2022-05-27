@@ -1,3 +1,8 @@
 main: com.minenorge.clans.App
 name: Clans
 version: 0.1
+
+commands:
+  bosetting:
+    aliases: [klan]
+    description: bosetting kommandoer

@@ -12,9 +12,10 @@ public class CreateClan implements CommandExecutor {
     private App plugin;
     private DatabaseContext ctx;
 
-	public CreateClan(App plugin) {
+	public CreateClan(App plugin, DatabaseContext ctx) {
 		this.plugin = plugin;
-		plugin.getCommand("bosetting").setExecutor(this);
+        this.ctx = ctx;
+		plugin.getCommand("klan").setExecutor(this);
 	}
 
     @Override
@@ -38,6 +39,7 @@ public class CreateClan implements CommandExecutor {
                 Clan clan = new Clan();
                 clan.setName(clanName);
                 boolean result = ctx.create(clan);
+
                 if(result) {
                     player.sendMessage("Clan successfully created");
                     return true;
