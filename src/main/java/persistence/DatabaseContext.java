@@ -5,8 +5,27 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 public class DatabaseContext {
+    private EntityManagerFactory emf;
+    private EntityManager em;
+
     public DatabaseContext() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("CRM");
-        EntityManager em = emf.createEntityManager();
+        emf = Persistence.createEntityManagerFactory("CRM");
+        em = emf.createEntityManager();
+    }
+
+    public void create(Object obj) {
+        em.persist(obj);
+    }
+
+    public void remove(Object obj) {
+        em.remove(obj);
+    }
+
+    public void update(Object obj) {
+        em.refresh(obj);
+    }
+
+    public <T> T get(Class<T> type, int id) {
+        return em.find(type, id);
     }
 }
