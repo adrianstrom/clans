@@ -1,10 +1,16 @@
 package com.minenorge.clans;
 
-import persistence.datatypes.Clan;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class App 
+public class App extends JavaPlugin
 {
-    public App() {
-        Clan clan = new Clan();
+    @Override
+    public void onEnable() {
+        
+    }
+
+    @Override
+    public void onDisable() {
+        
     }
 }

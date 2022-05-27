@@ -15,13 +15,15 @@ import jakarta.persistence.Id;
 @Where(clause = "deleted = false")
 public class Clan extends EntityBase {
     @Id
-    public int id;
+    private int id;
 
-    public String name;
+    private String name;
 
-    public Location location;
+    private Location location;
 
-    public Set<UUID> players = new HashSet<>();
+    private Set<UUID> players = new HashSet<>();
+
+    private UUID leader;
 
     public String getName() {
         return this.name;
@@ -54,5 +56,13 @@ public class Clan extends EntityBase {
 
     public void removePlayer(UUID playerId) {
         players.remove(playerId);
+    }
+
+    public Player getLeader() {
+        return Bukkit.getPlayer(this.leader);
+    }
+
+    public void setLeader(UUID playerId) {
+        this.leader = playerId;
     }
 }
