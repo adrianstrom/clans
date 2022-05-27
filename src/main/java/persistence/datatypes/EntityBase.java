@@ -2,7 +2,7 @@ package persistence.datatypes;
 
 import java.util.Date;
 
-public class EntityBase
+public abstract class EntityBase
 {
     public Date dateCreated;
     public Date dateUpdated;

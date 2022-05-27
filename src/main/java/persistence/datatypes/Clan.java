@@ -21,7 +21,7 @@ public class Clan extends EntityBase {
 
     public Location location;
 
-	public Set<UUID> players = new HashSet<>();
+    public Set<UUID> players = new HashSet<>();
 
     public String getName() {
         return this.name;
