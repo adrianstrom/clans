@@ -1,4 +1,4 @@
-package persistence.datatypes;
+package com.minenorge.clans.persistence.datatypes;
 
 import java.util.HashSet;
 import java.util.Set;

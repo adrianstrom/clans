@@ -1,4 +1,4 @@
-package persistence;
+package com.minenorge.clans.persistence;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
