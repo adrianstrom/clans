@@ -1,6 +1,5 @@
 package com.minenorge.clans.persistence;
 
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -15,13 +14,8 @@ public class DatabaseContext {
     }
 
     public boolean create(Object obj) {
-        try {
-            em.persist(obj);
-            return true;
-        }  
-        catch (EntityExistsException e) {
-            return false;
-        }
+        em.persist(obj);
+        return true;
     }
 
     public void remove(Object obj) {
