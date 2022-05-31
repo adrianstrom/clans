@@ -23,7 +23,7 @@ public class Clan extends EntityBase {
     @Column(name = "Name")
     private String name;
 
-    private Location location;
+    private Location location = new Location();
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Player> players = new ArrayList<>();
