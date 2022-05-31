@@ -8,15 +8,20 @@ import org.hibernate.annotations.Where;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+
+// TODO: Opprett Clan invites tabell
 
 @Entity(name = "CLAN")
 @Table(name = "CLAN")
 @Where(clause = "deleted = false")
 public class Clan extends EntityBase {
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "Id")
     private int id;
 
@@ -25,7 +30,7 @@ public class Clan extends EntityBase {
 
     private Location location = new Location();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Player> players = new ArrayList<>();
 
     @Column(name = "Name")
