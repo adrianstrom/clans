@@ -1,20 +1,29 @@
 package com.minenorge.clans.persistence;
 
+import com.minenorge.clans.persistence.datatypes.Clan;
+import com.minenorge.clans.persistence.datatypes.Player;
+
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 
 public class DatabaseContext {
-    private EntityManagerFactory emf;
     private EntityManager em;
 
     public DatabaseContext() {
-        emf = Persistence.createEntityManagerFactory("CRM");
-        em = emf.createEntityManager();
+        em = getJpaEntityManager();
+    }
+
+    private static class EntityManagerHolder {
+        private static final EntityManager ENTITY_MANAGER = new JpaEntityManagerFactory(new Class[] {Clan.class, Player.class}).getEntityManager();
+    }
+    
+    public static EntityManager getJpaEntityManager() {
+        return EntityManagerHolder.ENTITY_MANAGER;
     }
 
     public boolean create(Object obj) {
+        em.getTransaction().begin();
         em.persist(obj);
+        em.getTransaction().commit();
         return true;
     }
 

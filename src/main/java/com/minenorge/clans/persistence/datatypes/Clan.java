@@ -1,30 +1,34 @@
 package com.minenorge.clans.persistence.datatypes;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.hibernate.annotations.Where;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-@Entity(name = "Clan")
+@Entity(name = "CLAN")
+@Table(name = "CLAN")
 @Where(clause = "deleted = false")
 public class Clan extends EntityBase {
     @Id
+    @Column(name = "Id")
     private int id;
 
+    @Column(name = "Name")
     private String name;
 
     private Location location;
 
-    private Set<UUID> players = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Player> players = new ArrayList<>();
 
-    private UUID leader;
-
+    @Column(name = "Name")
     public String getName() {
         return this.name;
     }
@@ -41,28 +45,19 @@ public class Clan extends EntityBase {
         this.location = location;
     }
 
-    public Set<Player> getPlayers() {
-        Set<Player> players = new HashSet<>();
-        for (UUID playerId : this.players) {
-            Player player = Bukkit.getPlayer(playerId);
+    public List<Player> getPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Player player : this.players) {
             players.add(player);
         }
         return players;
     }
 
-    public void addPlayer(UUID playerId) {
-        players.add(playerId);
+    public void addPlayer(Player player) {
+        players.add(player);
     }
 
-    public void removePlayer(UUID playerId) {
-        players.remove(playerId);
-    }
-
-    public Player getLeader() {
-        return Bukkit.getPlayer(this.leader);
-    }
-
-    public void setLeader(UUID playerId) {
-        this.leader = playerId;
+    public void removePlayer(Player player) {
+        players.remove(player);
     }
 }
