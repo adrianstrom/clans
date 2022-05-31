@@ -9,9 +9,33 @@ import jakarta.persistence.MappedSuperclass;
 public abstract class EntityBase
 {
     @Column(name = "DateCreated")
-    public Instant dateCreated = Instant.now();
+    private Instant dateCreated = Instant.now();
     @Column(name = "DateUpdated")
-    public Instant dateUpdated = Instant.now();
+    private Instant dateUpdated = Instant.now();
     @Column(name = "Deleted")
-    public boolean deleted;
+    private boolean deleted;
+
+    protected Instant getDateCreated() {
+        return this.dateCreated;
+    }
+
+    protected Instant getDateUpdated() {
+        return this.dateUpdated;
+    }
+
+    protected boolean getDeleted() {
+        return this.deleted;
+    }
+
+    protected void setDateCreated(Instant dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    protected void setDateUpdated(Instant dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    protected void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 }
