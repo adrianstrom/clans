@@ -25,14 +25,14 @@ public class DatabaseContext {
         return EntityManagerHolder.ENTITY_MANAGER;
     }
 
-    public List<Clan> getClanByName(String name) {
+    public Clan getClanByName(String name) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Clan> criteria = builder.createQuery(Clan.class);
         Root<Clan> root = criteria.from(Clan.class);
         criteria.select(root);
         criteria.where(builder.equal(root.get("name"), name));
         List<Clan> clans = em.createQuery(criteria).getResultList();
-        return clans;
+        return clans.get(0);
     }
 
     public boolean create(Object obj) {

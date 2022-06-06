@@ -41,9 +41,10 @@ public class Clan extends EntityBase {
         this.name = name;
     }
 
-    public Location getLocation() {
-        return this.location;
-    }
+    public org.bukkit.Location getLocation() {
+        Location loc = this.location;
+		return new org.bukkit.Location(null, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+	}
 
     public void setLocation(Location location) {
         this.location = location;

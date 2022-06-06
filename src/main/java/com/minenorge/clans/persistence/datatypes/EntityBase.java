@@ -15,27 +15,27 @@ public abstract class EntityBase
     @Column(name = "Deleted")
     private boolean deleted;
 
-    protected Instant getDateCreated() {
+    public Instant getDateCreated() {
         return this.dateCreated;
     }
 
-    protected Instant getDateUpdated() {
+    public Instant getDateUpdated() {
         return this.dateUpdated;
     }
 
-    protected boolean getDeleted() {
+    public boolean getDeleted() {
         return this.deleted;
     }
 
-    protected void setDateCreated(Instant dateCreated) {
+    public void setDateCreated(Instant dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    protected void setDateUpdated(Instant dateUpdated) {
+    public void setDateUpdated(Instant dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
 
-    protected void setDeleted(boolean deleted) {
+    public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 }
