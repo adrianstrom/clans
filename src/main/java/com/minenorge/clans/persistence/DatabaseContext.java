@@ -1,9 +1,14 @@
 package com.minenorge.clans.persistence;
 
+import java.util.List;
+
 import com.minenorge.clans.persistence.datatypes.Clan;
 import com.minenorge.clans.persistence.datatypes.Player;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 public class DatabaseContext {
     private EntityManager em;
@@ -18,6 +23,16 @@ public class DatabaseContext {
     
     public static EntityManager getJpaEntityManager() {
         return EntityManagerHolder.ENTITY_MANAGER;
+    }
+
+    public List<Clan> getClanByName(String name) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Clan> criteria = builder.createQuery(Clan.class);
+        Root<Clan> root = criteria.from(Clan.class);
+        criteria.select(root);
+        criteria.where(builder.equal(root.get("name"), name));
+        List<Clan> clans = em.createQuery(criteria).getResultList();
+        return clans;
     }
 
     public boolean create(Object obj) {

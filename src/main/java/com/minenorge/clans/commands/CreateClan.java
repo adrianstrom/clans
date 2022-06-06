@@ -7,6 +7,7 @@ import com.minenorge.clans.persistence.datatypes.Clan;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.List;
 
 public class CreateClan implements CommandExecutor {
     private App plugin;
@@ -34,17 +35,23 @@ public class CreateClan implements CommandExecutor {
             String action = args[0];
 			String clanName = args[1];
 
-            if(action.equals("opprett"))
-            {
+            if(action.equals("opprett")) {
+                // Ensure clan doesn't exist so we don't end up with clans with same name.
+                List<Clan> clans = ctx.getClanByName(clanName);
+                if(!clans.isEmpty()){
+                    player.sendMessage("Clan already exists.");
+                    return true;
+                }
+
                 Clan clan = new Clan();
                 clan.setName(clanName);
-                boolean result = ctx.create(clan);
 
+                boolean result = ctx.create(clan);
                 if(result) {
-                    player.sendMessage("Clan successfully created");
+                    player.sendMessage("Clan successfully created.");
                     return true;
                 } else {
-                    player.sendMessage("Clan not created");
+                    player.sendMessage("Clan not created.");
                 }
             }
             player.sendMessage("message");

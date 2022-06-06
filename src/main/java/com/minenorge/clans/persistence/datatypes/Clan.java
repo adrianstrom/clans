@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-// TODO: Opprett Clan invites tabell
 
 @Entity(name = "CLAN")
 @Table(name = "CLAN")
