@@ -3,6 +3,7 @@ package com.minenorge.clans.commands;
 import com.minenorge.clans.App;
 import com.minenorge.clans.persistence.DatabaseContext;
 import com.minenorge.clans.persistence.datatypes.Clan;
+import com.minenorge.utils.Utils;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -41,13 +42,13 @@ public class CreateClan implements CommandExecutor {
             if(action.equals("opprett")) {
                 // Ensure player is not member of a clan before trying to create clan
                 if(isMemberOfClan) {
-                    player.sendMessage("Du er allerede medlem av en klan");
+                    player.sendMessage(Utils.fail("Du er allerede medlem av en klan"));
                     return true;
                 }
 
                 // Ensure clan doesn't exist so we don't end up with clans with same name
                 if(clan != null){
-                    player.sendMessage("Denne klanen eksisterer allerede");
+                    player.sendMessage(Utils.fail("Denne klanen eksisterer allerede"));
                     return true;
                 }
 
@@ -57,30 +58,30 @@ public class CreateClan implements CommandExecutor {
                 // clan.setLeader(player);
                 boolean result = ctx.create(clan);
                 if(result) {
-                    player.sendMessage("Klanen " + clan.getName() + " ble opprettet med deg som leder");
+                    player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble opprettet med deg som leder"));
                     return true;
                 }
-                player.sendMessage("Klanen ble ikke opprettet");
+                player.sendMessage(Utils.fail("Klanen ble ikke opprettet"));
                 return true;
             } else if(action.equals("fjern")) {
                 if(clan != null) {
                     clan.setDeleted(true);
-                    player.sendMessage("Klanen " + clan.getName() + " ble slettet");
+                    player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble slettet"));
                     return true;
                 }
-                player.sendMessage("Klanen eksisterer ikke");
+                player.sendMessage(Utils.fail("Klanen eksisterer ikke"));
                 return true;
             } else if(action.equals("base")) {
                 if(!isMemberOfClan) {
-                    player.sendMessage("Du er ikke medlem av en klan");
+                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
                     return true;
                 }
                 if(clan != null) {
                     player.teleport(clan.getLocation());
-                    player.sendMessage("Du ble teleportert til " + clan.getName() + " sin base.");
+                    player.sendMessage(Utils.success("Du ble teleportert til " + clan.getName() + " sin base"));
                     return true;
                 }
-                player.sendMessage("Denne klanen har ingen base");
+                player.sendMessage(Utils.fail("Denne klanen har ingen base"));
                 return true;
             }
             player.sendMessage("message");
