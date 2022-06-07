@@ -38,7 +38,7 @@ public class CreateClan implements CommandExecutor {
 
             if (action.equals("info")) {
                 if (isMemberOfClan) {
-                    player.sendMessage(clan.getClanInfo());
+                    player.sendMessage(clan.getClanInfo(ctx));
                     return true;
                 }
                 player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
@@ -75,6 +75,18 @@ public class CreateClan implements CommandExecutor {
             } else if (action.equals("forlat")) {
                 // Leave clan and make new clan leader
                 return true;
+            } else if (action.equals("settbase")) {
+                if(!isMemberOfClan) {
+                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
+                    return true;
+                }
+                if(clan.getLeader() == player.getUniqueId()) {
+                    clan.setLocation(player.getLocation());
+                    ctx.update(clan);
+                    return true;
+                }
+                player.sendMessage("Du kan ikke sette basespawn siden du er ikke leder av klanen");
+                return true;
             }
             return true;
         }
@@ -100,6 +112,7 @@ public class CreateClan implements CommandExecutor {
                 clan = new Clan();
                 clan.setName(clanName);
                 clan.addPlayer(clanPlayer);
+                clan.setLeader(player.getUniqueId());
                 boolean result = ctx.create(clan);
                 if (result) {
                     player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble opprettet med deg som leder"));

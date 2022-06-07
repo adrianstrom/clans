@@ -4,10 +4,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import javax.xml.crypto.Data;
 
 import org.bukkit.Bukkit;
 import org.hibernate.annotations.Where;
 
+import com.minenorge.clans.persistence.DatabaseContext;
 import com.minenorge.utils.Utils;
 
 import jakarta.persistence.CascadeType;
@@ -32,7 +36,9 @@ public class Clan extends EntityBase {
     @Column(name = "Name")
     private String name;
 
-    private Location location = new Location();
+    private Location location;
+
+    private UUID leader;
 
     @OneToMany(mappedBy = "clan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClanPlayer> players = new ArrayList<>();
@@ -51,8 +57,26 @@ public class Clan extends EntityBase {
 		return new org.bukkit.Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 	}
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocation(org.bukkit.Location location) {
+        this.location = new Location();
+        location.setWorld(location.getWorld());
+        location.setX(location.getX());
+        location.setY(location.getY());
+        location.setZ(location.getZ());
+        location.setPitch(location.getPitch());
+        location.setYaw(location.getYaw());
+    }
+
+    public UUID getLeader() {
+        return this.leader;
+    }
+
+    public ClanPlayer getLeader(DatabaseContext ctx) {
+        return ctx.getPlayerByPlayerId(this.leader);
+    }
+
+    public void setLeader(UUID leader) {
+        this.leader = leader;
     }
 
     public List<ClanPlayer> getPlayers() {
@@ -85,12 +109,21 @@ public class Clan extends EntityBase {
         return formattedNames;
     }
 
-    public String getClanInfo() {
+    private String getClanSpawnCoordinates(Location loc) {
+        if(loc == null) {
+            return "Klanen har ikke satt et basespawn";
+        }
+        return this.location.getX() + ", " +  this.getLocation().getY() + ", " + this.getLocation().getZ();
+    }
+
+    public String getClanInfo(DatabaseContext ctx) {
 		String formattedString = 
-        Utils.chat("&7-----&8[ " + this.name + " ]&7-----\n" +
-        "&aMedlemmer: " + getFormattedPlayers() + "\n" +
-        "&aDager gammel: " + (Duration.between(Instant.now(), getDateCreated()).toDays()) + "\n" +
-        "&aBase: (" + this.location.getX() + ", " +  this.getLocation().getY() + ", " + this.getLocation().getZ() + ")");
+        Utils.chat("&6-------------&a[ " + this.name + " ]&6-------------\n" +
+        "&7Leder: &f" + this.getLeader(ctx).getPlayer().getDisplayName() + "\n" +
+        "&7Medlemmer: &f" + getFormattedPlayers() + "\n" +
+        "&7Base: &f(" + getClanSpawnCoordinates(location) + ")" + "\n" +
+        "&7Dager gammel: &f" + (Duration.between(Instant.now(), getDateCreated()).toDays()) + "\n" +
+        "&7Fiende: &f" + "kommer");
 		return formattedString;
 	}
 }
