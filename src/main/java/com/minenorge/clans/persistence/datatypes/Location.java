@@ -1,12 +1,18 @@
 package com.minenorge.clans.persistence.datatypes;
 
-import org.bukkit.Location;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Location {
+
+	@Column(name="WorldId")
+	private UUID worldId;
 
 	@Column(name = "X")
 	private float x;
@@ -22,6 +28,10 @@ public class Location {
 
 	@Column(name = "Yaw")
     private float yaw;
+
+	public World getWorld() {
+		return Bukkit.getWorld(this.worldId);
+	}
 
 	public float getX() {
 		return this.x;

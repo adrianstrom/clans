@@ -3,6 +3,7 @@ package com.minenorge.clans.commands;
 import com.minenorge.clans.App;
 import com.minenorge.clans.persistence.DatabaseContext;
 import com.minenorge.clans.persistence.datatypes.Clan;
+import com.minenorge.clans.persistence.datatypes.ClanPlayer;
 import com.minenorge.utils.Utils;
 
 import org.bukkit.command.CommandExecutor;
@@ -36,8 +37,8 @@ public class CreateClan implements CommandExecutor {
 			String clanName = args[1];
 
             Clan clan = ctx.getClanByName(clanName);
-            // TODO: Map clan on player
-            boolean isMemberOfClan = false;
+            ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+            boolean isMemberOfClan = clanPlayer.getClan() != null;
 
             if(action.equals("opprett")) {
                 // Ensure player is not member of a clan before trying to create clan
@@ -54,8 +55,7 @@ public class CreateClan implements CommandExecutor {
 
                 clan = new Clan();
                 clan.setName(clanName);
-                // clan.addPlayer(player);
-                // clan.setLeader(player);
+                clanPlayer.setClan(clan);
                 boolean result = ctx.create(clan);
                 if(result) {
                     player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble opprettet med deg som leder"));
@@ -66,12 +66,17 @@ public class CreateClan implements CommandExecutor {
             } else if(action.equals("fjern")) {
                 if(clan != null) {
                     clan.setDeleted(true);
+                    ctx.update(clan);
                     player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble slettet"));
                     return true;
                 }
                 player.sendMessage(Utils.fail("Klanen eksisterer ikke"));
                 return true;
-            } else if(action.equals("base")) {
+            } else if(action.equals("forlat")) {
+                // Leave clan and make new clan leader
+                return true;
+            } 
+            else if(action.equals("base")) {
                 if(!isMemberOfClan) {
                     player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
                     return true;

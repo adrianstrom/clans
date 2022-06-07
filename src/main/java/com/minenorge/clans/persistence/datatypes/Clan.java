@@ -11,7 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -29,8 +29,8 @@ public class Clan extends EntityBase {
 
     private Location location = new Location();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Player> players = new ArrayList<>();
+    @OneToMany(mappedBy = "clan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClanPlayer> players = new ArrayList<>();
 
     @Column(name = "Name")
     public String getName() {
@@ -43,26 +43,26 @@ public class Clan extends EntityBase {
 
     public org.bukkit.Location getLocation() {
         Location loc = this.location;
-		return new org.bukkit.Location(null, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+		return new org.bukkit.Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 	}
 
     public void setLocation(Location location) {
         this.location = location;
     }
 
-    public List<Player> getPlayers() {
-        List<Player> players = new ArrayList<>();
-        for (Player player : this.players) {
+    public List<ClanPlayer> getPlayers() {
+        List<ClanPlayer> players = new ArrayList<>();
+        for (ClanPlayer player : this.players) {
             players.add(player);
         }
         return players;
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(ClanPlayer player) {
         players.add(player);
     }
 
-    public void removePlayer(Player player) {
+    public void removePlayer(ClanPlayer player) {
         players.remove(player);
     }
 }
