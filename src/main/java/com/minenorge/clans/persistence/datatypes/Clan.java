@@ -1,9 +1,13 @@
 package com.minenorge.clans.persistence.datatypes;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.Where;
+
+import com.minenorge.utils.Utils;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -65,4 +69,21 @@ public class Clan extends EntityBase {
     public void removePlayer(ClanPlayer player) {
         players.remove(player);
     }
+
+    private String getFormattedPlayers() {
+        String formattedNames = "";
+        for (ClanPlayer clanPlayer : players) {
+            String playerName = clanPlayer.getPlayer().getDisplayName();
+            formattedNames += playerName;
+        }
+        return formattedNames;
+    }
+
+    public String getClanInfo() {
+		String formattedString = "";
+        Utils.chat("&6" + this.name + "\n" +
+        "Medlemmer: " + getFormattedPlayers() + "\n" +
+        "Dager gammel: " + (Duration.between(Instant.now(), getDateCreated()).toDays()));
+		return formattedString;
+	}
 }

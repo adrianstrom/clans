@@ -34,6 +34,10 @@ public class ClanPlayer extends EntityBase {
         this.playerUniqueId = id;
     }
 
+    public Player getPlayer() {
+        return this.player;
+    }
+
     public Clan getClan() {
         return this.clan;
     }
