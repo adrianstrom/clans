@@ -28,8 +28,54 @@ public class CreateClan implements CommandExecutor {
 			player.sendMessage("Hvilken kommando ønsker du å bruke?");
 			return true;
         } 
+
         else if(args.length == 1) {
-            player.sendMessage("message");
+            String action = args[0];
+
+            ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+            Clan clan = clanPlayer.getClan();
+            boolean isMemberOfClan = clan != null;
+
+            if (action.equals("info")) {
+                if (isMemberOfClan) {
+                    player.sendMessage(clan.getClanInfo());
+                    return true;
+                }
+                player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
+                return true;
+            } else if (action.equals("base")) {
+                if (!isMemberOfClan) {
+                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
+                    return true;
+                }
+                if (clan != null) {
+                    player.teleport(clan.getLocation());
+                    player.sendMessage(Utils.success("Du ble teleportert til " + clan.getName() + " sin base"));
+                    return true;
+                }
+                player.sendMessage(Utils.fail("Denne klanen har ingen base"));
+                return true;
+            } else if (action.equals("hjelp")) {
+                player.sendMessage(Utils.chat("&6===============[ MineNorge ]=============== \n" +
+                "&2/klan opprett (navn på klan) - Oppretter en klan med deg selv som leder \n" +
+                "&2/klan slett (navn på klan) - Sletter klanen om du er klanleder \n" +
+                "&2/klan info - Gir informasjon om klanen du er medlem av\n" +
+                "&2/klan base - Teleporterer deg til din klan sin base \n" +
+                "&2/klan forlat - Forlat klanen du er medlem av \n"));
+                return true;
+            } else if (action.equals("slett")) {
+                if (clan != null) {
+                    clan.setDeleted(true);
+                    ctx.update(clan);
+                    player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble slettet"));
+                    return true;
+                }
+                player.sendMessage(Utils.fail("Klanen eksisterer ikke"));
+                return true;
+            } else if (action.equals("forlat")) {
+                // Leave clan and make new clan leader
+                return true;
+            }
             return true;
         }
         else if(args.length == 2) {
@@ -53,44 +99,13 @@ public class CreateClan implements CommandExecutor {
                 }
                 clan = new Clan();
                 clan.setName(clanName);
-                clanPlayer.setClan(clan);
+                clan.addPlayer(clanPlayer);
                 boolean result = ctx.create(clan);
                 if (result) {
                     player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble opprettet med deg som leder"));
                     return true;
                 }
                 player.sendMessage(Utils.fail("Klanen ble ikke opprettet"));
-                return true;
-            } else if (action.equals("fjern")) {
-                if (clan != null) {
-                    clan.setDeleted(true);
-                    ctx.update(clan);
-                    player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble slettet"));
-                    return true;
-                }
-                player.sendMessage(Utils.fail("Klanen eksisterer ikke"));
-                return true;
-            } else if (action.equals("informasjon")) {
-                if (clan != null) {
-                    player.sendMessage(clan.getClanInfo());
-                    return true;
-                }
-                player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
-                return true;
-            } else if (action.equals("forlat")) {
-                // Leave clan and make new clan leader
-                return true;
-            } else if (action.equals("base")) {
-                if (!isMemberOfClan) {
-                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
-                    return true;
-                }
-                if (clan != null) {
-                    player.teleport(clan.getLocation());
-                    player.sendMessage(Utils.success("Du ble teleportert til " + clan.getName() + " sin base"));
-                    return true;
-                }
-                player.sendMessage(Utils.fail("Denne klanen har ingen base"));
                 return true;
             }
             player.sendMessage("message");

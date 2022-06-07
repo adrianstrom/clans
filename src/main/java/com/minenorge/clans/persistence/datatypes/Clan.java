@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.hibernate.annotations.Where;
 
 import com.minenorge.utils.Utils;
@@ -64,26 +65,32 @@ public class Clan extends EntityBase {
 
     public void addPlayer(ClanPlayer player) {
         players.add(player);
+        player.setClan(this);
     }
 
     public void removePlayer(ClanPlayer player) {
         players.remove(player);
+        player.setClan(null);
     }
 
     private String getFormattedPlayers() {
         String formattedNames = "";
+        Bukkit.getLogger().info("getFormattedPlayers");
         for (ClanPlayer clanPlayer : players) {
             String playerName = clanPlayer.getPlayer().getDisplayName();
+            Bukkit.getLogger().info(playerName);
             formattedNames += playerName;
         }
+        Bukkit.getLogger().info("ferdig med getFormattedPlayers");
         return formattedNames;
     }
 
     public String getClanInfo() {
-		String formattedString = "";
-        Utils.chat("&6" + this.name + "\n" +
-        "Medlemmer: " + getFormattedPlayers() + "\n" +
-        "Dager gammel: " + (Duration.between(Instant.now(), getDateCreated()).toDays()));
+		String formattedString = 
+        Utils.chat("&7-----&8[ " + this.name + " ]&7-----\n" +
+        "&aMedlemmer: " + getFormattedPlayers() + "\n" +
+        "&aDager gammel: " + (Duration.between(Instant.now(), getDateCreated()).toDays()) + "\n" +
+        "&aBase: (" + this.location.getX() + ", " +  this.getLocation().getY() + ", " + this.getLocation().getZ() + ")");
 		return formattedString;
 	}
 }
