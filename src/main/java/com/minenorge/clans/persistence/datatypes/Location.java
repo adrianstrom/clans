@@ -15,13 +15,13 @@ public class Location {
 	private UUID worldId;
 
 	@Column(name = "X")
-	private float x;
+	private double x;
 
 	@Column(name = "Y")
-	private float y;
+	private double y;
 
 	@Column(name = "Z")
-	private float z;
+	private double z;
 
 	@Column(name = "Pitch")
     private float pitch;
@@ -29,19 +29,43 @@ public class Location {
 	@Column(name = "Yaw")
     private float yaw;
 
+	public void setWorld(World world) {
+		this.worldId = world.getUID();
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public void setZ(double z) {
+		this.z = z;
+	}
+
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
+	}
+
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+	}
+
 	public World getWorld() {
 		return Bukkit.getWorld(this.worldId);
 	}
 
-	public float getX() {
+	public double getX() {
 		return this.x;
 	}
 
-	public float getY() {
+	public double getY() {
 		return this.y;
 	}
 
-	public float getZ() {
+	public double getZ() {
 		return this.z;
 	}
 

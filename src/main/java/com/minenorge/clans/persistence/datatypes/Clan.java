@@ -38,6 +38,7 @@ public class Clan extends EntityBase {
 
     private Location location;
 
+    @Column(name = "Leader")
     private UUID leader;
 
     @OneToMany(mappedBy = "clan", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -57,14 +58,14 @@ public class Clan extends EntityBase {
 		return new org.bukkit.Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 	}
 
-    public void setLocation(org.bukkit.Location location) {
+    public void setLocation(org.bukkit.Location loc) {
         this.location = new Location();
-        location.setWorld(location.getWorld());
-        location.setX(location.getX());
-        location.setY(location.getY());
-        location.setZ(location.getZ());
-        location.setPitch(location.getPitch());
-        location.setYaw(location.getYaw());
+        location.setWorld(loc.getWorld());
+        location.setX(loc.getX());
+        location.setY(loc.getY());
+        location.setZ(loc.getZ());
+        location.setPitch(loc.getPitch());
+        location.setYaw(loc.getYaw());
     }
 
     public UUID getLeader() {

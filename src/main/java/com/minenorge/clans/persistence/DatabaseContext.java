@@ -65,8 +65,9 @@ public class DatabaseContext {
     }
 
     public void update(Object obj) {
-        em.refresh(obj);
-        em.persist(obj);
+        em.getTransaction().begin();
+        em.merge(obj);
+        em.getTransaction().commit();
     }
 
     public <T> T get(Class<T> type, int id) {

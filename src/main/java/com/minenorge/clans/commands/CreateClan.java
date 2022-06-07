@@ -80,12 +80,13 @@ public class CreateClan implements CommandExecutor {
                     player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
                     return true;
                 }
-                if(clan.getLeader() == player.getUniqueId()) {
+                if(clan.getLeader().equals(player.getUniqueId())) {
                     clan.setLocation(player.getLocation());
                     ctx.update(clan);
+                    player.sendMessage(Utils.success("Klan spawn satt"));
                     return true;
                 }
-                player.sendMessage("Du kan ikke sette basespawn siden du er ikke leder av klanen");
+                player.sendMessage(Utils.fail("Du kan ikke sette basespawn siden du er ikke leder av klanen"));
                 return true;
             }
             return true;
