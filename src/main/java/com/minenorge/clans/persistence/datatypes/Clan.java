@@ -127,7 +127,7 @@ public class Clan extends EntityBase {
 
     public void broadcastMessage(String message, ClanPlayer except) {
         for (ClanPlayer clanPlayer : players) {
-            if(except.getPlayer().getUniqueId().equals(clanPlayer.getPlayer().getUniqueId())) {
+            if(!except.getPlayer().getUniqueId().equals(clanPlayer.getPlayer().getUniqueId())) {
                 clanPlayer.getPlayer().sendMessage(message);
             }
         }
@@ -141,13 +141,11 @@ public class Clan extends EntityBase {
 
     private String getFormattedPlayers() {
         String formattedNames = "";
-        Bukkit.getLogger().info("getFormattedPlayers");
         for (ClanPlayer clanPlayer : players) {
             String playerName = clanPlayer.getPlayer().getDisplayName();
-            Bukkit.getLogger().info(playerName);
-            formattedNames += playerName;
+            formattedNames += playerName + ", ";
         }
-        Bukkit.getLogger().info("ferdig med getFormattedPlayers");
+        formattedNames.substring(0, formattedNames.length() - 3);
         return formattedNames;
     }
 
@@ -160,7 +158,7 @@ public class Clan extends EntityBase {
 
     public String getClanInfo() {
 		String formattedString = 
-        Utils.chat("&8---------------[ &c" + this.name + " &8]---------------\n" +
+        Utils.chat("&8---------------------[ &c" + this.name + " &8]---------------------\n" +
         "&7Leder: &f" + this.getLeader().getPlayer().getDisplayName() + "\n" +
         "&7Medlemmer: &f" + getFormattedPlayers() + "\n" +
         "&7Base: &f(" + getClanSpawnCoordinates(location) + ")" + "\n" +
