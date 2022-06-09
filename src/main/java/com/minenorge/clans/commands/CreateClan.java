@@ -160,6 +160,19 @@ public class CreateClan implements CommandExecutor {
                 player.sendMessage(Utils.success("Du invitere spilleren " + invitedPlayer.getDisplayName()) + " til " + clan.getName());
                 return true;
             } else if (action.equals("aksepter")) {
+                ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+                for (Clan clan : clanPlayer.getClanInvitations() ) {
+                    for(ClanPlayer invitedPlayer : clan.getInvitedPlayers()){
+                        if(clanPlayer.getPlayer().getUniqueId().equals(invitedPlayer.getPlayer().getUniqueId())) {
+                            clan.addPlayer(clanPlayer);
+                            clan.removeInvitation(clanPlayer);
+                            ctx.update(clan);
+                            clan.broadcastMessage(Utils.success(clanPlayer.getDisplayName() + " ble medlem av klanen din " + clan.getName()), clanPlayer);
+                            return true;
+                        }
+                    }
+                }
+                player.sendMessage(Utils.fail("Du er ikke invitert til denne klanen"));
                 return true;
             }
             return true;

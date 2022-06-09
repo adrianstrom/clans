@@ -64,6 +64,11 @@ public class Clan extends EntityBase {
 
     public void invitePlayer(ClanPlayer player) {
         invitedPlayers.add(player);
+        player.getClanInvitations().add(this);
+    }
+
+    public void removeInvitation(ClanPlayer player) {
+        invitedPlayers.remove(player);
         player.getClanInvitations().remove(this);
     }
 
@@ -118,6 +123,20 @@ public class Clan extends EntityBase {
     public void removePlayer(ClanPlayer player) {
         players.remove(player);
         player.setClan(null);
+    }
+
+    public void broadcastMessage(String message, ClanPlayer except) {
+        for (ClanPlayer clanPlayer : players) {
+            if(except.getPlayer().getUniqueId().equals(clanPlayer.getPlayer().getUniqueId())) {
+                clanPlayer.getPlayer().sendMessage(message);
+            }
+        }
+    }
+
+    public void broadcastMessage(String message) {
+        for (ClanPlayer clanPlayer : players) {
+            clanPlayer.getPlayer().sendMessage(message);
+        }
     }
 
     private String getFormattedPlayers() {

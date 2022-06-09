@@ -38,6 +38,10 @@ public class ClanPlayer extends EntityBase {
         this.player = player;
     }
 
+    public String getDisplayName() {
+        return this.getPlayer().getDisplayName();
+    }
+
     public void setPlayerUniqueId(UUID id) {
         this.playerUniqueId = id;
     }
