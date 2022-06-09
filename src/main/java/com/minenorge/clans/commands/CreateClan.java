@@ -60,11 +60,13 @@ public class CreateClan implements CommandExecutor {
             } else if (action.equals("hjelp")) {
                 player.sendMessage(Utils.chat("&8---------------[ &cKlansystem &8]--------------- \n" +
                 "&7/klan opprett (navn på klan) - &fOppretter en klan med deg selv som leder \n" +
-                "&7/klan slett (navn på klan) - &fSletter klanen om du er klan leder \n" +
-                "&7/klan info - &fGir informasjon om klanen du er medlem av\n" +
-                "&7/klan settbase - &fSetter spawn for klanen din\n" +
+                "&7/klan inviter (spiller) - &fInviterer spiller til klanen din om du er leder \n" +
+                "&7/klan aksepter (klan navn) - &fAksepterer invitasjon til å bli medlem av klan \n " +
+                "&7/klan settbase - &fSetter spawn for klanen din \n" +
                 "&7/klan base - &fTeleporterer deg til din klan sin base \n" +
-                "&7/klan forlat - &fForlat klanen du er medlem av \n"));
+                "&7/klan info - &fGir informasjon om klanen du er medlem av \n" +
+                "&7/klan forlat - &fForlat klanen du er medlem av \n" +
+                "&7/klan slett - &fSletter klanen om du er klan leder \n"));
                 return true;
             } else if (action.equals("slett")) {
                 if (clan != null) {
@@ -152,7 +154,6 @@ public class CreateClan implements CommandExecutor {
                     player.sendMessage(Utils.fail("Du kan ikke invitere folk til denne klanen fordi du ikke er leder av klanen"));
                     return true;
                 }                
-
                 clan.invitePlayer(invitedClanPlayer);
                 ctx.update(clan);
                 invitedPlayer.sendMessage(Utils.success("Du har blitt invitert til å bli med i klanen " + clan.getName()));
