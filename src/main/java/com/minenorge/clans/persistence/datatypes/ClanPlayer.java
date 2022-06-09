@@ -1,5 +1,7 @@
 package com.minenorge.clans.persistence.datatypes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -8,6 +10,7 @@ import org.hibernate.annotations.Where;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -16,6 +19,8 @@ import jakarta.persistence.Transient;
 @Table(name = "PLAYER")
 @Where(clause = "deleted = false")
 public class ClanPlayer extends EntityBase {
+    public ClanPlayer() {}
+
     @Transient
     private Player player;
 
@@ -25,6 +30,9 @@ public class ClanPlayer extends EntityBase {
     
     @ManyToOne
     private Clan clan;
+
+    @ManyToMany(mappedBy = "invitedPlayers")
+    private List<Clan> clanInvitations = new ArrayList<>();
 
     public ClanPlayer(Player player) {
         this.player = player;
@@ -44,5 +52,9 @@ public class ClanPlayer extends EntityBase {
 
     public void setClan(Clan clan) {
         this.clan = clan;
+    }
+    
+    public List<Clan> getClanInvitations() {
+        return this.clanInvitations;
     }
 }

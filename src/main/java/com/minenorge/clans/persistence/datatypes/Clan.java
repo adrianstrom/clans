@@ -4,14 +4,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import javax.xml.crypto.Data;
 
 import org.bukkit.Bukkit;
 import org.hibernate.annotations.Where;
 
-import com.minenorge.clans.persistence.DatabaseContext;
 import com.minenorge.utils.Utils;
 
 import jakarta.persistence.CascadeType;
@@ -20,7 +16,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 
@@ -28,6 +27,8 @@ import jakarta.persistence.Table;
 @Table(name = "CLAN")
 @Where(clause = "deleted = false")
 public class Clan extends EntityBase {
+    public Clan() { }
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "Id")
@@ -38,15 +39,32 @@ public class Clan extends EntityBase {
 
     private Location location;
 
-    @Column(name = "Leader")
-    private UUID leader;
+    @OneToOne
+    @JoinColumn(name = "LeaderId", referencedColumnName = "playerUniqueId")
+    private ClanPlayer leader;
 
-    @OneToMany(mappedBy = "clan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
+    @JoinColumn(name = "EnemyId", referencedColumnName = "id")
+    private Clan enemy;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<ClanPlayer> invitedPlayers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "clan")
     private List<ClanPlayer> players = new ArrayList<>();
 
     @Column(name = "Name")
     public String getName() {
         return this.name;
+    }
+
+    public List<ClanPlayer> getInvitedPlayers() {
+        return this.invitedPlayers;
+    }
+
+    public void invitePlayer(ClanPlayer player) {
+        invitedPlayers.add(player);
+        player.getClanInvitations().remove(this);
     }
 
     public void setName(String name) {
@@ -55,6 +73,10 @@ public class Clan extends EntityBase {
 
     public org.bukkit.Location getLocation() {
         Location loc = this.location;
+        if(loc == null)
+        {
+            return null;
+        }
 		return new org.bukkit.Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 	}
 
@@ -68,15 +90,15 @@ public class Clan extends EntityBase {
         location.setYaw(loc.getYaw());
     }
 
-    public UUID getLeader() {
+    public ClanPlayer getLeader() {
         return this.leader;
     }
 
-    public ClanPlayer getLeader(DatabaseContext ctx) {
-        return ctx.getPlayerByPlayerId(this.leader);
+    public String getLeaderDisplayName() {
+        return this.getLeader().getPlayer().getDisplayName();
     }
 
-    public void setLeader(UUID leader) {
+    public void setLeader(ClanPlayer leader) {
         this.leader = leader;
     }
 
@@ -114,13 +136,13 @@ public class Clan extends EntityBase {
         if(loc == null) {
             return "Klanen har ikke satt et basespawn";
         }
-        return this.location.getX() + ", " +  this.getLocation().getY() + ", " + this.getLocation().getZ();
+        return (int)this.location.getX() + ", " +  (int)this.getLocation().getY() + ", " + (int)this.getLocation().getZ();
     }
 
-    public String getClanInfo(DatabaseContext ctx) {
+    public String getClanInfo() {
 		String formattedString = 
-        Utils.chat("&6-------------&a[ " + this.name + " ]&6-------------\n" +
-        "&7Leder: &f" + this.getLeader(ctx).getPlayer().getDisplayName() + "\n" +
+        Utils.chat("&8---------------[ &c" + this.name + " &8]---------------\n" +
+        "&7Leder: &f" + this.getLeader().getPlayer().getDisplayName() + "\n" +
         "&7Medlemmer: &f" + getFormattedPlayers() + "\n" +
         "&7Base: &f(" + getClanSpawnCoordinates(location) + ")" + "\n" +
         "&7Dager gammel: &f" + (Duration.between(Instant.now(), getDateCreated()).toDays()) + "\n" +

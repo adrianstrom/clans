@@ -6,6 +6,7 @@ import com.minenorge.clans.persistence.datatypes.Clan;
 import com.minenorge.clans.persistence.datatypes.ClanPlayer;
 import com.minenorge.utils.Utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,10 +36,11 @@ public class CreateClan implements CommandExecutor {
             ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
             Clan clan = clanPlayer.getClan();
             boolean isMemberOfClan = clan != null;
+            boolean isClanLeader = clan != null && clan.getLeader().getPlayer().getUniqueId().equals(player.getUniqueId());
 
             if (action.equals("info")) {
                 if (isMemberOfClan) {
-                    player.sendMessage(clan.getClanInfo(ctx));
+                    player.sendMessage(clan.getClanInfo());
                     return true;
                 }
                 player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
@@ -48,7 +50,7 @@ public class CreateClan implements CommandExecutor {
                     player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
                     return true;
                 }
-                if (clan != null) {
+                if (clan != null && clan.getLocation() != null) {
                     player.teleport(clan.getLocation());
                     player.sendMessage(Utils.success("Du ble teleportert til " + clan.getName() + " sin base"));
                     return true;
@@ -56,16 +58,20 @@ public class CreateClan implements CommandExecutor {
                 player.sendMessage(Utils.fail("Denne klanen har ingen base"));
                 return true;
             } else if (action.equals("hjelp")) {
-                player.sendMessage(Utils.chat("&6===============[ MineNorge ]=============== \n" +
-                "&2/klan opprett (navn på klan) - Oppretter en klan med deg selv som leder \n" +
-                "&2/klan slett (navn på klan) - Sletter klanen om du er klanleder \n" +
-                "&2/klan info - Gir informasjon om klanen du er medlem av\n" +
-                "&2/klan base - Teleporterer deg til din klan sin base \n" +
-                "&2/klan forlat - Forlat klanen du er medlem av \n"));
+                player.sendMessage(Utils.chat("&8---------------[ &cKlansystem &8]--------------- \n" +
+                "&7/klan opprett (navn på klan) - &fOppretter en klan med deg selv som leder \n" +
+                "&7/klan slett (navn på klan) - &fSletter klanen om du er klan leder \n" +
+                "&7/klan info - &fGir informasjon om klanen du er medlem av\n" +
+                "&7/klan settbase - &fSetter spawn for klanen din\n" +
+                "&7/klan base - &fTeleporterer deg til din klan sin base \n" +
+                "&7/klan forlat - &fForlat klanen du er medlem av \n"));
                 return true;
             } else if (action.equals("slett")) {
                 if (clan != null) {
                     clan.setDeleted(true);
+                    for (ClanPlayer cp : clan.getPlayers()) {
+                        clan.removePlayer(cp);
+                    }
                     ctx.update(clan);
                     player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble slettet"));
                     return true;
@@ -73,14 +79,20 @@ public class CreateClan implements CommandExecutor {
                 player.sendMessage(Utils.fail("Klanen eksisterer ikke"));
                 return true;
             } else if (action.equals("forlat")) {
-                // Leave clan and make new clan leader
-                return true;
-            } else if (action.equals("settbase")) {
                 if(!isMemberOfClan) {
                     player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
                     return true;
                 }
-                if(clan.getLeader().equals(player.getUniqueId())) {
+                clan.removePlayer(clanPlayer);
+                ctx.update(clan);
+                Bukkit.broadcastMessage(Utils.success(clanPlayer.getPlayer().getDisplayName() + " forlot klanen " + clan.getName()));
+                return true;
+            } else if (action.equals("settbase")) {
+                if (!isMemberOfClan) {
+                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
+                    return true;
+                }
+                if (isClanLeader) {
                     clan.setLocation(player.getLocation());
                     ctx.update(clan);
                     player.sendMessage(Utils.success("Klan spawn satt"));
@@ -88,24 +100,24 @@ public class CreateClan implements CommandExecutor {
                 }
                 player.sendMessage(Utils.fail("Du kan ikke sette basespawn siden du er ikke leder av klanen"));
                 return true;
+            } else if (action.equals("liste")) {
+                return true;
             }
             return true;
         }
         else if(args.length == 2) {
             String action = args[0];
-			String clanName = args[1];
-
-            Clan clan = ctx.getClanByName(clanName);
-            ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
-            boolean isMemberOfClan = clanPlayer.getClan() != null;
-
             if (action.equals("opprett")) {
-                // Ensure player is not member of a clan before trying to create clan
+                String clanName = args[1];
+
+                Clan clan = ctx.getClanByName(clanName);
+                ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+                boolean isMemberOfClan = clanPlayer.getClan() != null;
+
                 if (isMemberOfClan) {
                     player.sendMessage(Utils.fail("Du er allerede medlem av en klan"));
                     return true;
                 }
-                // Ensure clan doesn't exist so we don't end up with clans with same name
                 if (clan != null) {
                     player.sendMessage(Utils.fail("Denne klanen eksisterer allerede"));
                     return true;
@@ -113,16 +125,42 @@ public class CreateClan implements CommandExecutor {
                 clan = new Clan();
                 clan.setName(clanName);
                 clan.addPlayer(clanPlayer);
-                clan.setLeader(player.getUniqueId());
+                clan.setLeader(clanPlayer);
                 boolean result = ctx.create(clan);
                 if (result) {
-                    player.sendMessage(Utils.success("Klanen " + clan.getName() + " ble opprettet med deg som leder"));
+                    Bukkit.broadcastMessage(Utils.success("Klanen " + clan.getName() + " ble opprettet med " + clan.getLeaderDisplayName() + " som leder"));
                     return true;
                 }
                 player.sendMessage(Utils.fail("Klanen ble ikke opprettet"));
                 return true;
+            } else if (action.equals("inviter")) {
+                String playerName = args[1];
+                Player invitedPlayer = Bukkit.getPlayer(playerName);
+                if(invitedPlayer == null) {
+                    player.sendMessage(Utils.fail("Fant ikke denne spilleren"));
+                    return true;
+                }
+                ClanPlayer invitedClanPlayer = ctx.getPlayerByPlayerId(invitedPlayer.getUniqueId());
+                if(invitedClanPlayer.getClan() != null) {
+                    player.sendMessage(Utils.fail("Du kan ikke invitere en spiller som allerede er medlem av en klan"));
+                    return true;
+                }
+                ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+                Clan clan = clanPlayer.getClan();
+                boolean isClanLeader = clan.getLeader().getPlayer().getUniqueId().equals(player.getUniqueId());
+                if (!isClanLeader) {
+                    player.sendMessage(Utils.fail("Du kan ikke invitere folk til denne klanen fordi du ikke er leder av klanen"));
+                    return true;
+                }                
+
+                clan.invitePlayer(invitedClanPlayer);
+                ctx.update(clan);
+                invitedPlayer.sendMessage(Utils.success("Du har blitt invitert til å bli med i klanen " + clan.getName()));
+                player.sendMessage(Utils.success("Du invitere spilleren " + invitedPlayer.getDisplayName()) + " til " + clan.getName());
+                return true;
+            } else if (action.equals("aksepter")) {
+                return true;
             }
-            player.sendMessage("message");
             return true;
         }
         return false;
