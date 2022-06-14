@@ -4,6 +4,7 @@ import com.minenorge.clans.App;
 import com.minenorge.clans.persistence.DatabaseContext;
 import com.minenorge.clans.persistence.datatypes.Clan;
 import com.minenorge.clans.persistence.datatypes.ClanPlayer;
+import com.minenorge.clans.persistence.datatypes.Settlement;
 import com.minenorge.utils.Utils;
 
 import org.bukkit.Bukkit;
@@ -62,8 +63,9 @@ public class CreateClan implements CommandExecutor {
                 "&7/klan opprett (navn på klan) - &fOppretter en klan med deg selv som leder \n" +
                 "&7/klan inviter (spiller) - &fInviterer spiller til klanen din om du er leder \n" +
                 "&7/klan aksepter (klan navn) - &fAksepterer invitasjon til å bli medlem av klan \n " +
-                "&7/klan settbase - &fSetter spawn for klanen din \n" +
-                "&7/klan base - &fTeleporterer deg til din klan sin base \n" +
+                "&7/klan settbase <navn> - &fOppretter en base for klanen din \n" +
+                "&7/klan base <navn> - &fTeleporterer deg til din klan sin base \n" +
+                "&7/klan baser - &fGir deg en oversikt over basene til klanen din \n" +
                 "&7/klan info - &fGir informasjon om klanen du er medlem av \n" +
                 "&7/klan forlat - &fForlat klanen du er medlem av \n" +
                 "&7/klan slett - &fSletter klanen om du er klan leder \n"));
@@ -156,7 +158,9 @@ public class CreateClan implements CommandExecutor {
                 return true;
             } else if (action.equals("aksepter")) {
                 String clanName = args[1];
+
                 ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+
                 for (Clan clan : clanPlayer.getClanInvitations() ) {
                     if(clan.getName().equals(clanName)) {
                         for(ClanPlayer member : clan.getPlayers()) {
@@ -165,6 +169,7 @@ public class CreateClan implements CommandExecutor {
                                 return true;
                             }
                         }
+
                         for(ClanPlayer invitedPlayer : clan.getInvitedPlayers()){
                             if(clanPlayer.getPlayer().getUniqueId().equals(invitedPlayer.getPlayer().getUniqueId())) {
                                 clan.addPlayer(clanPlayer);
@@ -178,6 +183,26 @@ public class CreateClan implements CommandExecutor {
                 }
                 player.sendMessage(Utils.fail("Du er ikke invitert til denne klanen"));
                 return true;
+            } else if(action.equals("settbase")) {
+                String baseName = args[1];
+
+                ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+                Clan clan = clanPlayer.getClan();
+
+                boolean isClanLeader = clan != null && clan.getLeader() != null && clan.getLeader().getPlayer().getUniqueId().equals(player.getUniqueId());
+                for (String settlement : clan.getSettlements()) {
+                    foreach(va)
+                }
+                if (isClanLeader)
+                {
+                    Settlement settlement = new Settlement();
+                    settlement.setLocation(player.getLocation());
+                    settlement.setName(baseName);
+                    clan.addSettlement(settlement);          
+                    ctx.create(settlement);
+                    ctx.update(clan);
+                    clan.broadcastMessage(Utils.success("Basen " + settlement.getName() + " ble opprettet for klanen din " + clan.getName()));
+                }
             }
             return true;
         }
