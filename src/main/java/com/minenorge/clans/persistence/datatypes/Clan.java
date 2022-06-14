@@ -84,6 +84,14 @@ public class Clan extends EntityBase {
         settlements.add(settlement);
     }
 
+    public void removeSettlement(Settlement settlement) {
+        settlements.remove(settlement);
+    }
+
+    public List<Settlement> getSettlements() {
+        return this.settlements;
+    }
+
     public ClanPlayer getLeader() {
         return this.leader;
     }

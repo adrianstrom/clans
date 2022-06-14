@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.hamcrest.core.Is;
 
 public class CreateClan implements CommandExecutor {
     private App plugin;
@@ -163,21 +164,51 @@ public class CreateClan implements CommandExecutor {
 
                 ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
                 Clan clan = clanPlayer.getClan();
+                boolean isMemberOfClan = clan != null;
 
-                boolean isClanLeader = clan != null && clan.getLeader() != null && clan.getLeader().getPlayer().getUniqueId().equals(player.getUniqueId());
-                for (String settlement : clan.getSettlements()) {
-                    foreach(va)
-                }
-                if (isClanLeader)
+                if(!isMemberOfClan)
                 {
-                    Settlement settlement = new Settlement();
-                    settlement.setLocation(player.getLocation());
-                    settlement.setName(baseName);
-                    clan.addSettlement(settlement);          
-                    ctx.create(settlement);
-                    ctx.update(clan);
-                    clan.broadcastMessage(Utils.success("Basen " + settlement.getName() + " ble opprettet for klanen din " + clan.getName()));
+                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
+                    return true;
                 }
+
+                for (Settlement settlement : clan.getSettlements()) {
+                    if(settlement.name.equals(baseName)) {
+                        player.sendMessage(Utils.fail("Klanen din har allerede en base med samme navn " + baseName));
+                        return true;
+                    }
+                }
+                Settlement settlement = new Settlement();
+                settlement.setLocation(player.getLocation());
+                settlement.setName(baseName);
+                clan.addSettlement(settlement);          
+                ctx.create(settlement);
+                ctx.update(clan);
+                clan.broadcastMessage(Utils.success("Basen " + settlement.getName() + " ble opprettet for klanen din " + clan.getName()));
+                return true;
+            } else if (action.equals("fjernbase")) {
+                String baseName = args[1];
+
+                ClanPlayer clanPlayer = ctx.getPlayerByPlayerId(player.getUniqueId());
+                Clan clan = clanPlayer.getClan();
+                boolean isMemberOfClan = clan != null;
+
+                if(!isMemberOfClan)
+                {
+                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
+                    return true;
+                }
+
+                for (Settlement settlement : clan.getSettlements()) {
+                    if(settlement.name.equals(baseName)) {
+                        clan.removeSettlement(settlement);
+                        ctx.update(clan);
+                        clan.broadcastMessage(Utils.success("Basen " + settlement.getName() + " ble fjernet av " + player.getDisplayName()));
+                        return true;
+                    }
+                }
+                player.sendMessage(Utils.fail("Fant ikke klanen med navn " + baseName + " som du prøvde å fjerne"));
+                return true;
             }
             return true;
         }
