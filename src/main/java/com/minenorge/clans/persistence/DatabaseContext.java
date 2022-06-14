@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.minenorge.clans.persistence.datatypes.Clan;
 import com.minenorge.clans.persistence.datatypes.ClanPlayer;
+import com.minenorge.clans.persistence.datatypes.Settlement;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -19,7 +20,12 @@ public class DatabaseContext {
     }
 
     private static class EntityManagerHolder {
-        private static final EntityManager ENTITY_MANAGER = new JpaEntityManagerFactory(new Class[] { ClanPlayer.class, Clan.class }).getEntityManager();
+        private static final EntityManager ENTITY_MANAGER = new JpaEntityManagerFactory(new Class[] 
+        { 
+            ClanPlayer.class, 
+            Clan.class,
+            Settlement.class,
+         }).getEntityManager();
     }
     
     public static EntityManager getJpaEntityManager() {

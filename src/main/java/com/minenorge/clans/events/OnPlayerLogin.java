@@ -24,11 +24,10 @@ public class OnPlayerLogin implements Listener {
         UUID playerId = e.getPlayer().getUniqueId();
         ClanPlayer player = ctx.getPlayerByPlayerId(playerId);
         if(player == null) {
-            player = new ClanPlayer(e.getPlayer());
+            player = new ClanPlayer();
+            player.setPlayer(e.getPlayer());
             player.setPlayerUniqueId(playerId);
             ctx.create(player);
         }
-        player.getPlayer().sendMessage("Du kan nå lage flere baser i klanen din med /klan settbase <navn>");
-        player.getPlayer().sendMessage("For å gå til en base bruk /klan base <navn>");
     }
 }

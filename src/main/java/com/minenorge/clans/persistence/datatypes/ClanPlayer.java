@@ -20,8 +20,6 @@ import jakarta.persistence.Transient;
 @Table(name = "PLAYER")
 @Where(clause = "deleted = false")
 public class ClanPlayer extends EntityBase {
-    public ClanPlayer() {}
-
     @Transient
     private Player player;
 
@@ -30,13 +28,13 @@ public class ClanPlayer extends EntityBase {
     private UUID playerUniqueId;
     
     @ManyToOne
-    @JoinColumn(name="ClanId", nullable=false)
+    @JoinColumn(name="ClanId", nullable=true)
     private Clan clan;
 
     @ManyToMany(mappedBy = "invitedPlayers")
     private List<Clan> clanInvitations = new ArrayList<>();
 
-    public ClanPlayer(Player player) {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 

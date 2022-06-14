@@ -3,12 +3,13 @@ package com.minenorge.clans.persistence.datatypes;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.MappedSuperclass;
 
+@MappedSuperclass
 @Embeddable
 public class Location {
 
@@ -37,6 +38,11 @@ public class Location {
 		this.z = loc.getZ();
 		this.pitch = loc.getPitch();
 		this.yaw = loc.getYaw();
+	}
+
+	public org.bukkit.Location getLocation() {
+		org.bukkit.Location loc = new org.bukkit.Location(Bukkit.getWorld(worldId), x, y, z, pitch, yaw);
+		return loc;
 	}
 
 	public void setWorld(World world) {

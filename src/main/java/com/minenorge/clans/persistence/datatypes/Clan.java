@@ -28,7 +28,6 @@ import jakarta.persistence.Table;
 @Where(clause = "deleted = false")
 public class Clan extends EntityBase {
     public Clan() { }
-
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "Id")
@@ -40,18 +39,17 @@ public class Clan extends EntityBase {
     private Location location;
 
     @OneToMany(mappedBy = "clan")
-    private List<Settlement> settlements; 
+    private List<Settlement> settlements = new ArrayList<>(); 
 
     @OneToOne
-    @JoinColumn(name = "LeaderId", referencedColumnName = "PlayerUniqueId")
+    @JoinColumn(name = "LeaderId", referencedColumnName = "playerUniqueId")
     private ClanPlayer leader;
 
     @OneToOne
-    @JoinColumn(name = "EnemyId", referencedColumnName = "Id")
+    @JoinColumn(name = "EnemyId", referencedColumnName = "id")
     private Clan enemy;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-
     private List<ClanPlayer> invitedPlayers = new ArrayList<>();
 
     @OneToMany(mappedBy = "clan")
@@ -82,10 +80,12 @@ public class Clan extends EntityBase {
 
     public void addSettlement(Settlement settlement) {
         settlements.add(settlement);
+        settlement.setClan(this);
     }
 
     public void removeSettlement(Settlement settlement) {
         settlements.remove(settlement);
+        settlement.setClan(null);
     }
 
     public List<Settlement> getSettlements() {
@@ -139,10 +139,10 @@ public class Clan extends EntityBase {
     private String getFormattedPlayers() {
         String formattedNames = "";
         for (ClanPlayer clanPlayer : players) {
-            String playerName = clanPlayer.getPlayer().getDisplayName();
+            String playerName = clanPlayer.getDisplayName();
             formattedNames += playerName + ", ";
         }
-        formattedNames.substring(0, formattedNames.length() - 3);
+        formattedNames.substring(0, formattedNames.length() - 4);
         return formattedNames;
     }
 
@@ -156,11 +156,21 @@ public class Clan extends EntityBase {
     public String getClanInfo() {
 		String formattedString = 
         Utils.chat("&8---------------------[ &c" + this.name + " &8]---------------------\n" +
-        "&7Leder: &f" + this.getLeader().getPlayer().getDisplayName() + "\n" +
+        "&7Leder: &f" + this.getLeader().getDisplayName() + "\n" +
         "&7Medlemmer: &f" + getFormattedPlayers() + "\n" +
         "&7Base: &f(" + getClanSpawnCoordinates(location) + ")" + "\n" +
-        "&7Dager gammel: &f" + (Duration.between(Instant.now(), getDateCreated()).toDays()) + "\n" +
+        "&7Dager gammel: &f" + (Duration.between(getDateCreated(), Instant.now()).toDays()) + "\n" +
         "&7Fiende: &f" + "kommer");
 		return formattedString;
 	}
+
+    public String getFormattedSettlements() {
+        String formattedNames = "";
+        for (Settlement settlement : settlements) {
+            String name = settlement.name;
+            formattedNames += name + ", ";
+        }
+        formattedNames.substring(0, formattedNames.length() - 4);
+        return formattedNames;
+    }
 }
