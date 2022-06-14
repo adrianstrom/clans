@@ -39,15 +39,19 @@ public class Clan extends EntityBase {
 
     private Location location;
 
+    @OneToMany(mappedBy = "clan")
+    private List<Settlement> settlements; 
+
     @OneToOne
-    @JoinColumn(name = "LeaderId", referencedColumnName = "playerUniqueId")
+    @JoinColumn(name = "LeaderId", referencedColumnName = "PlayerUniqueId")
     private ClanPlayer leader;
 
     @OneToOne
-    @JoinColumn(name = "EnemyId", referencedColumnName = "id")
+    @JoinColumn(name = "EnemyId", referencedColumnName = "Id")
     private Clan enemy;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
     private List<ClanPlayer> invitedPlayers = new ArrayList<>();
 
     @OneToMany(mappedBy = "clan")
@@ -76,23 +80,8 @@ public class Clan extends EntityBase {
         this.name = name;
     }
 
-    public org.bukkit.Location getLocation() {
-        Location loc = this.location;
-        if(loc == null)
-        {
-            return null;
-        }
-		return new org.bukkit.Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-	}
-
-    public void setLocation(org.bukkit.Location loc) {
-        this.location = new Location();
-        location.setWorld(loc.getWorld());
-        location.setX(loc.getX());
-        location.setY(loc.getY());
-        location.setZ(loc.getZ());
-        location.setPitch(loc.getPitch());
-        location.setYaw(loc.getYaw());
+    public void addSettlement(Settlement settlement) {
+        settlements.add(settlement);
     }
 
     public ClanPlayer getLeader() {
@@ -153,7 +142,7 @@ public class Clan extends EntityBase {
         if(loc == null) {
             return "Klanen har ikke satt et basespawn";
         }
-        return (int)this.location.getX() + ", " +  (int)this.getLocation().getY() + ", " + (int)this.getLocation().getZ();
+        return (int)this.location.getX() + ", " +  (int)this.location.getY() + ", " + (int)this.location.getZ();
     }
 
     public String getClanInfo() {

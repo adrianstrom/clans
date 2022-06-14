@@ -3,6 +3,7 @@ package com.minenorge.clans.persistence.datatypes;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import jakarta.persistence.Column;
@@ -28,6 +29,15 @@ public class Location {
 
 	@Column(name = "Yaw")
     private float yaw;
+
+	public void setLocation(org.bukkit.Location loc) {
+		this.worldId = loc.getWorld().getUID();
+		this.x = loc.getX();
+		this.y = loc.getY();
+		this.z = loc.getZ();
+		this.pitch = loc.getPitch();
+		this.yaw = loc.getYaw();
+	}
 
 	public void setWorld(World world) {
 		this.worldId = world.getUID();

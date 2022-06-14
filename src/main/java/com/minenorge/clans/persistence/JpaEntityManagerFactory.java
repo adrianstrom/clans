@@ -52,7 +52,7 @@ public class JpaEntityManagerFactory {
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         properties.put("hibernate.id.new_generator_mappings", false);
         properties.put("hibernate.connection.datasource", getMysqlDataSource());
-        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.hbm2ddl.auto", "create");
         return properties;
     }
 

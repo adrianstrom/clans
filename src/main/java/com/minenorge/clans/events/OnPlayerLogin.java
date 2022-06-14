@@ -28,5 +28,7 @@ public class OnPlayerLogin implements Listener {
             player.setPlayerUniqueId(playerId);
             ctx.create(player);
         }
+        player.getPlayer().sendMessage("Du kan nå lage flere baser i klanen din med /klan settbase <navn>");
+        player.getPlayer().sendMessage("For å gå til en base bruk /klan base <navn>");
     }
 }

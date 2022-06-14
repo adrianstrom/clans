@@ -46,18 +46,6 @@ public class CreateClan implements CommandExecutor {
                 }
                 player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
                 return true;
-            } else if (action.equals("base")) {
-                if (!isMemberOfClan) {
-                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
-                    return true;
-                }
-                if (clan != null && clan.getLocation() != null) {
-                    player.teleport(clan.getLocation());
-                    player.sendMessage(Utils.success("Du ble teleportert til " + clan.getName() + " sin base"));
-                    return true;
-                }
-                player.sendMessage(Utils.fail("Denne klanen har ingen base"));
-                return true;
             } else if (action.equals("hjelp")) {
                 player.sendMessage(Utils.chat("&8-------------------[ &cKlansystem &8]------------------- \n" +
                 "&7/klan opprett (navn på klan) - &fOppretter en klan med deg selv som leder \n" +
@@ -85,19 +73,6 @@ public class CreateClan implements CommandExecutor {
                 clan.removePlayer(clanPlayer);
                 ctx.update(clan);
                 Bukkit.broadcastMessage(Utils.success(clanPlayer.getPlayer().getDisplayName() + " forlot klanen " + clan.getName()));
-                return true;
-            } else if (action.equals("settbase")) {
-                if (!isMemberOfClan) {
-                    player.sendMessage(Utils.fail("Du er ikke medlem av en klan"));
-                    return true;
-                }
-                if (isClanLeader) {
-                    clan.setLocation(player.getLocation());
-                    ctx.update(clan);
-                    player.sendMessage(Utils.success("Klan spawn satt"));
-                    return true;
-                }
-                player.sendMessage(Utils.fail("Du kan ikke sette basespawn siden du er ikke leder av klanen"));
                 return true;
             } else if (action.equals("liste")) {
                 return true;
